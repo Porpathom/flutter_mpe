@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'screens/dashboard_page.dart';
+import 'screens/add_transaction_page.dart';
+import 'screens/history_page.dart';
+import 'screens/summary_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Expense Manager',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -31,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
     DashboardPage(),
     AddTransactionPage(),
     HistoryPage(),
-    SummaryPage(),  // เพิ่มหน้าสรุปผลการเงิน
+    SummaryPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -63,51 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.pie_chart),
-            label: 'Summary',  // เพิ่มไอคอนและเลเบลสำหรับหน้าสรุป
+            label: 'Summary',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
   }
 }
-
-class DashboardPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Dashboard Page'),
-    );
-  }
-}
-
-class AddTransactionPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Add Transaction Page'),
-    );
-  }
-}
-
-class HistoryPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('History Page'),
-    );
-  }
-}
-
-// Summary Page
-class SummaryPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("No data available")
-    );
-  }
-}
-  
