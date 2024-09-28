@@ -1,6 +1,6 @@
 class User {
   final String username;
-  final String password; // ในการใช้งานจริง ควรเก็บเฉพาะ hashed password
+  final String password;
   final String? email;
   final String? fullName;
 
@@ -11,7 +11,7 @@ class User {
     this.fullName,
   });
 
-  // แปลงข้อมูล User เป็น Map เพื่อเก็บใน SharedPreferences
+
   Map<String, dynamic> toMap() {
     return {
       'username': username,
@@ -21,7 +21,6 @@ class User {
     };
   }
 
-  // สร้าง User จาก Map ที่ได้จาก SharedPreferences
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       username: map['username'],
