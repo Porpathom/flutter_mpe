@@ -10,33 +10,42 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  String _username = '';
+  String _password = '';
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   void _login() async {
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
-    if (username == 'admin' && password == 'admin') {
-      // Navigate to AdminPage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => AdminPage()),
-      );
-    } else {
-      bool success = await _authService.login(username, password);
-      if (success) {
-        // Navigate to DashboardPage for regular users
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (_username == 'admin' && _password == 'admin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardPage()),
+          MaterialPageRoute(builder: (context) => AdminPage()),
         );
       } else {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid username or password')),
-        );
+        bool success = await _authService.login(_username, _password);
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (success) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DashboardPage()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Invalid username or password')),
+          );
+        }
       }
     }
   }
@@ -44,38 +53,91 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Icon(Icons.lock, size: 80, color: Theme.of(context).primaryColor),
+                    SizedBox(height: 40),
+                    Text(
+                      'Login',
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 40),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Enter your username' : null,
+                      onSaved: (value) => _username = value!,
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                      obscureText: _obscurePassword,
+                      validator: (value) => value!.isEmpty ? 'Enter your password' : null,
+                      onSaved: (value) => _password = value!,
+                    ),
+                    SizedBox(height: 30),
+                    _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: Text('Login', style: TextStyle(fontSize: 18)),
+                            ),
+                            onPressed: _login,
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
+                    SizedBox(height: 20),
+                    TextButton(
+                      child: Text('Don’t have an account? Register here'),
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 24),
-            ElevatedButton(
-              child: Text('Login'),
-              onPressed: _login,
-            ),
-            SizedBox(height: 16),
-            TextButton(
-              child: Text('Don’t have an account? Register here'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterPage()),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
