@@ -38,7 +38,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _loadTransactions() async {
-    final transactions = await TransactionService(useMockData: true).getTransactions(); // Use false to load user-added transactions
+    final transactions = await TransactionService(useMockData: false).getTransactions(); // Use false to load user-added transactions
     if (transactions.isNotEmpty) {
       setState(() {
         _transactions = transactions..sort((a, b) => b.date.compareTo(a.date));

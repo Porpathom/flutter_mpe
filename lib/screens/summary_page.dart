@@ -13,7 +13,7 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  final TransactionService _transactionService = TransactionService(useMockData: true);
+  final TransactionService _transactionService = TransactionService(useMockData: false);
   DateTime selectedMonth = DateTime.now();
   List<Transaction> monthlyTransactions = [];
   Map<String, int> categoryTotals = {};

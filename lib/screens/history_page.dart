@@ -6,7 +6,7 @@ import '../services/transaction_service.dart';
 class HistoryPage extends StatefulWidget {
   final bool useMockData;
 
-  HistoryPage({this.useMockData = true});
+  HistoryPage({this.useMockData = false});
 
   @override
   _HistoryPageState createState() => _HistoryPageState();
